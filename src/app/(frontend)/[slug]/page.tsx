@@ -333,7 +333,7 @@ function ArticleDetailPage({ article, relatedArticles, mostReadArticles }: { art
             )}
 
             {/* Content */}
-            <div className="prose prose-lg max-w-none prose-headings:font-extrabold prose-headings:tracking-tight prose-a:text-primary prose-img:rounded-xl">
+            <div className="article-content">
               <RichTextRenderer content={article.content} />
             </div>
 
@@ -536,7 +536,7 @@ function StaticPage({ page }: { page: { title: string; content: any } }) {
             <h1 className="text-4xl font-extrabold tracking-tight text-slate-900">{page.title}</h1>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-8 md:p-12 prose prose-slate max-w-none prose-headings:font-extrabold prose-headings:tracking-tight prose-a:text-primary prose-img:rounded-xl">
+        <div className="bg-white rounded-xl border border-gray-200 p-8 md:p-12 article-content">
           <RichTextRenderer content={page.content} />
         </div>
       </main>
