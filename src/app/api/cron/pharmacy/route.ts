@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 3. API cache'lerini de temizle - her il için veriyi yeniden çek
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+    const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
     const results: Record<string, number> = {}
 
     for (const city of CITIES) {
