@@ -29,7 +29,7 @@ export const Hero = ({ articles }: HeroProps) => {
                     priority
                     quality={75}
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/90"></div>
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/50"></div>
             </div>
             <div className="absolute top-6 left-6 flex gap-2 z-10">
                 <span className="bg-primary text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Özel Haber</span>
@@ -39,20 +39,11 @@ export const Hero = ({ articles }: HeroProps) => {
                     </span>
                 )}
             </div>
-            <div className="absolute bottom-0 left-0 p-8 w-full lg:w-4/5">
-                <p className="text-white/70 text-sm font-medium mb-3 flex items-center gap-2">
+            <div className="absolute bottom-0 left-0 p-6">
+                <p className="text-white/80 text-sm font-medium flex items-center gap-2">
                     <span className="material-symbols-outlined text-sm">schedule</span> 
                     {new Date(mainStory.publishedAt || mainStory.createdAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })}
                 </p>
-                <h2 className="text-white text-3xl lg:text-5xl font-extrabold leading-tight mb-4 tracking-tight">
-                    {mainStory.title}
-                </h2>
-                <p className="text-white/80 text-lg line-clamp-2 mb-6 font-light">
-                    {mainStory.excerpt}
-                </p>
-                <button className="bg-white text-black px-6 py-2.5 rounded-lg font-bold text-sm hover:bg-primary hover:text-white transition-all">
-                    Haberi Oku
-                </button>
             </div>
         </Link>
 
