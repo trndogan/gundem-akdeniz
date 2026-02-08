@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
   const results: Record<string, any> = { pharmacy: {}, weather: {} }
 
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'
+    const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
 
     // 1. Nöbetçi Eczane - Sayfaları revalidate et
     revalidatePath('/nobetci-eczane')
