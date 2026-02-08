@@ -22,6 +22,17 @@ const CITY_LABEL_MAP: Record<string, string> = {
   kahramanmaras: 'Kahramanmaraş',
 }
 
+const CITY_PLATE_MAP: Record<string, string> = {
+  antalya: '07',
+  mersin: '33',
+  adana: '01',
+  hatay: '31',
+  isparta: '32',
+  burdur: '15',
+  osmaniye: '80',
+  kahramanmaras: '46',
+}
+
 interface Pharmacy {
   name: string
   district: string
@@ -29,58 +40,100 @@ interface Pharmacy {
   phone: string
 }
 
-async function fetchFromEczanelerGenTr(citySlug: string): Promise<Pharmacy[]> {
-  const url = `https://www.eczaneler.gen.tr/nobetci-${citySlug}`
+async function fetchFromNosyApi(citySlug: string): Promise<Pharmacy[]> {
+  const cityLabel = CITY_LABEL_MAP[citySlug]
+  if (!cityLabel) return []
+  
+  const url = `https://www.nosyapi.com/apiv2/service/pharmacies-on-duty?city=${encodeURIComponent(cityLabel)}`
   const res = await fetch(url, {
     headers: {
-      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-      'Accept': 'text/html,application/xhtml+xml',
-      'Accept-Language': 'tr-TR,tr;q=0.9',
+      'Authorization': 'Bearer ' + (process.env.NOSYAPI_KEY || ''),
+      'Content-Type': 'application/json',
     },
     next: { revalidate: 600 },
   })
   if (!res.ok) return []
-  const html = await res.text()
+  const data = await res.json()
+  if (!data?.data) return []
+  
+  return data.data.map((p: any) => ({
+    name: p.pharmacyName || p.name || '',
+    district: p.district || p.dist || '',
+    address: p.address || '',
+    phone: p.phone || '',
+  }))
+}
 
-  const pharmacies: Pharmacy[] = []
+async function fetchFromEczaneApi(citySlug: string): Promise<Pharmacy[]> {
+  const plate = CITY_PLATE_MAP[citySlug]
+  if (!plate) return []
 
-  // HTML'i </td></tr> ile böl - her parça bir eczane satırı
-  const blocks = html.split('</td></tr>')
+  const url = `https://api.eczaneler.gen.tr/nobetci?il=${plate}`
+  const res = await fetch(url, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+      'Accept': 'application/json',
+    },
+    next: { revalidate: 600 },
+  })
+  if (!res.ok) return []
+  const data = await res.json()
+  if (!Array.isArray(data)) return []
 
-  for (const block of blocks) {
-    // Sadece eczane satırlarını al (isim span'ı olanlar)
-    if (!block.includes('class="isim"')) continue
+  return data.map((p: any) => ({
+    name: p.EczaneAdi || p.name || '',
+    district: p.Ilce || p.district || '',
+    address: p.Adresi || p.address || '',
+    phone: p.Telefon || p.phone || '',
+  }))
+}
 
-    // İsim
-    const nameMatch = block.match(/<span class="isim">(.*?)<\/span>/)
-    const name = nameMatch ? nameMatch[1].trim() : ''
-    if (!name) continue
+async function fetchFromOpenApi(citySlug: string): Promise<Pharmacy[]> {
+  const cityLabel = CITY_LABEL_MAP[citySlug]
+  if (!cityLabel) return []
 
-    // İlçe
-    const districtMatch = block.match(/bg-info[^"]*">(.*?)<\/span>/)
-    const district = districtMatch ? districtMatch[1].trim() : ''
+  const url = `https://api.collectapi.com/health/dutyPharmacy?il=${encodeURIComponent(cityLabel)}`
+  const res = await fetch(url, {
+    headers: {
+      'Authorization': 'apikey ' + (process.env.COLLECTAPI_KEY || ''),
+      'Content-Type': 'application/json',
+    },
+    next: { revalidate: 600 },
+  })
+  if (!res.ok) return []
+  const data = await res.json()
+  if (!data?.result) return []
 
-    // Telefon
-    const phoneMatch = block.match(/col-lg-3 py-lg-2'>(.*?)<\/div>/)
-    const phone = phoneMatch ? phoneMatch[1].replace(/<[^>]+>/g, '').trim() : ''
+  return data.result.map((p: any) => ({
+    name: p.name || '',
+    district: p.dist || '',
+    address: p.address || '',
+    phone: p.phone || '',
+  }))
+}
 
-    // Adres - col-lg-6 div'inden ilk metin
-    const addrMatch = block.match(/col-lg-6'>(.*?)(?:<br|<div)/)
-    let address = ''
-    if (addrMatch) {
-      address = addrMatch[1]
-        .replace(/<[^>]+>/g, '')
-        .replace(/&raquo;/g, '')
-        .replace(/&apos;/g, "'")
-        .replace(/&amp;/g, '&')
-        .replace(/\s+/g, ' ')
-        .trim()
-    }
+async function fetchFromRxMediaApi(citySlug: string): Promise<Pharmacy[]> {
+  const cityLabel = CITY_LABEL_MAP[citySlug]
+  if (!cityLabel) return []
 
-    pharmacies.push({ name, district, address, phone })
-  }
+  const url = `https://rxmedia.com.tr/api/nobetci-eczane/${encodeURIComponent(cityLabel)}`
+  const res = await fetch(url, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+      'Accept': 'application/json',
+    },
+    next: { revalidate: 600 },
+  })
+  if (!res.ok) return []
+  const data = await res.json()
+  if (!Array.isArray(data)) return []
 
-  return pharmacies
+  return data.map((p: any) => ({
+    name: p.eczaneAdi || p.name || '',
+    district: p.ilce || p.district || '',
+    address: p.adres || p.address || '',
+    phone: p.telefon || p.phone || '',
+  }))
 }
 
 export async function GET(
@@ -95,10 +148,21 @@ export async function GET(
 
   let pharmacies: Pharmacy[] = []
 
-  try {
-    pharmacies = await fetchFromEczanelerGenTr(citySlug)
-  } catch (err) {
-    console.error('Pharmacy fetch error:', err)
+  // Sırayla farklı API kaynaklarını dene
+  const fetchers = [
+    fetchFromEczaneApi,
+    fetchFromRxMediaApi,
+    fetchFromNosyApi,
+    fetchFromOpenApi,
+  ]
+
+  for (const fetcher of fetchers) {
+    try {
+      pharmacies = await fetcher(citySlug)
+      if (pharmacies.length > 0) break
+    } catch (err) {
+      console.error(`Pharmacy fetch error (${fetcher.name}):`, err)
+    }
   }
 
   return NextResponse.json({
