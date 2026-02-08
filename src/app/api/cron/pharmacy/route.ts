@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
 
     for (const city of CITIES) {
       try {
-        const res = await fetch(`${baseUrl}/api/pharmacy/${city}`, {
+        const res = await fetch(`${baseUrl}/api/pharmacy/${city}?refresh=true`, {
           cache: 'no-store',
         })
         const data = await res.json()

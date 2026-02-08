@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import fs from 'fs'
+import path from 'path'
 
 const CITY_NAME_MAP: Record<string, string> = {
   antalya: 'antalya',
@@ -29,7 +31,44 @@ interface Pharmacy {
   phone: string
 }
 
-async function fetchFromCollectApi(citySlug: string): Promise<Pharmacy[]> {
+interface CacheData {
+  pharmacies: Pharmacy[]
+  updatedAt: string
+}
+
+const CACHE_DIR = '/tmp/pharmacy-cache'
+
+function ensureCacheDir() {
+  if (!fs.existsSync(CACHE_DIR)) {
+    fs.mkdirSync(CACHE_DIR, { recursive: true })
+  }
+}
+
+function getCachePath(citySlug: string): string {
+  return path.join(CACHE_DIR, `${citySlug}.json`)
+}
+
+function readCache(citySlug: string): CacheData | null {
+  try {
+    const cachePath = getCachePath(citySlug)
+    if (!fs.existsSync(cachePath)) return null
+    const raw = fs.readFileSync(cachePath, 'utf-8')
+    return JSON.parse(raw)
+  } catch {
+    return null
+  }
+}
+
+function writeCache(citySlug: string, data: CacheData) {
+  try {
+    ensureCacheDir()
+    fs.writeFileSync(getCachePath(citySlug), JSON.stringify(data), 'utf-8')
+  } catch (err) {
+    console.error('Cache write error:', err)
+  }
+}
+
+export async function fetchFromCollectApi(citySlug: string): Promise<Pharmacy[]> {
   const cityLabel = CITY_LABEL_MAP[citySlug]
   if (!cityLabel) return []
 
@@ -45,7 +84,7 @@ async function fetchFromCollectApi(citySlug: string): Promise<Pharmacy[]> {
       'authorization': `apikey ${apiKey}`,
       'content-type': 'application/json',
     },
-    next: { revalidate: 86400 },
+    cache: 'no-store',
   })
   if (!res.ok) {
     console.error(`CollectAPI error: ${res.status} ${res.statusText}`)
@@ -54,12 +93,16 @@ async function fetchFromCollectApi(citySlug: string): Promise<Pharmacy[]> {
   const data = await res.json()
   if (!data?.result || !Array.isArray(data.result)) return []
 
-  return data.result.map((p: any) => ({
+  const pharmacies = data.result.map((p: any) => ({
     name: p.name || '',
     district: p.dist || '',
     address: p.address || '',
     phone: p.phone || '',
   }))
+
+  writeCache(citySlug, { pharmacies, updatedAt: new Date().toISOString() })
+
+  return pharmacies
 }
 
 export async function GET(
@@ -72,18 +115,33 @@ export async function GET(
     return NextResponse.json({ error: 'Geçersiz şehir' }, { status: 400 })
   }
 
-  let pharmacies: Pharmacy[] = []
+  const forceRefresh = request.nextUrl.searchParams.get('refresh') === 'true'
 
-  try {
-    pharmacies = await fetchFromCollectApi(citySlug)
-  } catch (err) {
-    console.error('Pharmacy fetch error:', err)
+  let pharmacies: Pharmacy[] = []
+  let updatedAt = new Date().toISOString()
+
+  const cached = readCache(citySlug)
+
+  if (cached && !forceRefresh) {
+    pharmacies = cached.pharmacies
+    updatedAt = cached.updatedAt
+  } else {
+    try {
+      pharmacies = await fetchFromCollectApi(citySlug)
+      updatedAt = new Date().toISOString()
+    } catch (err) {
+      console.error('Pharmacy fetch error:', err)
+      if (cached) {
+        pharmacies = cached.pharmacies
+        updatedAt = cached.updatedAt
+      }
+    }
   }
 
   return NextResponse.json({
     city: CITY_LABEL_MAP[city] || city,
     count: pharmacies.length,
     pharmacies,
-    updatedAt: new Date().toISOString(),
+    updatedAt,
   })
 }
