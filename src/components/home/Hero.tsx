@@ -27,6 +27,7 @@ export const Hero = ({ articles }: HeroProps) => {
                     sizes="(max-width: 1024px) 100vw, 60vw"
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                     priority
+                    quality={75}
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/90"></div>
             </div>
