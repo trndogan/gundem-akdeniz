@@ -25,11 +25,7 @@ export async function generateMetadata({ params }: { params: Promise<{ city: str
   };
 }
 
-export async function generateStaticParams() {
-  return WEATHER_CITIES.map(c => ({ city: c.slug }));
-}
-
-export const revalidate = 1800;
+export const dynamic = 'force-dynamic';
 
 interface WeatherData {
   city: string;

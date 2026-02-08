@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   twitter: { card: 'summary', title: pageTitle, description: pageDesc },
 };
 
-export const revalidate = 1800;
+export const dynamic = 'force-dynamic';
 
 async function getCityWeather(slug: string) {
   try {
