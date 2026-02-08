@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Article } from '@/types';
 import { getArticleUrl, getImageUrl, getCategoryName } from '@/lib/constants';
 
@@ -19,10 +20,13 @@ export const Hero = ({ articles }: HeroProps) => {
         {/* Main Story (3/5) */}
         <Link href={getArticleUrl(mainStory.slug, mainStory.id)} className="lg:col-span-3 relative rounded-xl overflow-hidden group bento-card cursor-pointer block min-h-[400px]">
             <div className="absolute inset-0">
-                <img 
+                <Image 
                     src={getImageUrl(mainStory.featuredImage)}
                     alt={mainStory.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 60vw"
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    priority
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/90"></div>
             </div>
@@ -58,10 +62,12 @@ export const Hero = ({ articles }: HeroProps) => {
                 <Link key={story.id} href={getArticleUrl(story.slug, story.id)} className="relative rounded-xl overflow-hidden bento-card cursor-pointer border border-gray-200 bg-white shadow-sm block">
                     <div className="flex h-full">
                         <div className="w-1/3 relative min-h-[120px]">
-                            <img 
+                            <Image 
                                 src={getImageUrl(story.featuredImage)}
                                 alt={story.title}
-                                className="absolute inset-0 w-full h-full object-cover"
+                                fill
+                                sizes="(max-width: 768px) 33vw, 15vw"
+                                className="object-cover"
                             />
                         </div>
                         <div className="w-2/3 p-4 flex flex-col justify-center">

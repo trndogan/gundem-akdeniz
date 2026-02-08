@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Article } from '@/types';
 import { getArticleUrl, getImageUrl, getCategoryName } from '@/lib/constants';
 
@@ -48,10 +49,12 @@ export const RegionalHub = ({ articles }: RegionalHubProps) => {
                 filteredArticles.map((item) => (
                     <Link key={item.id} href={getArticleUrl(item.slug, item.id)} className="group cursor-pointer block">
                        <div className="relative aspect-video rounded-xl overflow-hidden mb-4 border border-gray-200 shadow-sm">
-                           <img 
+                           <Image 
                                src={getImageUrl(item.featuredImage)}
                                alt={item.title}
-                               className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                               fill
+                               sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                               className="object-cover transition-transform duration-500 group-hover:scale-110"
                            />
                            <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-md px-2 py-1 rounded text-[10px] font-bold uppercase text-white z-10">
                                {getCategoryName(item.category)}

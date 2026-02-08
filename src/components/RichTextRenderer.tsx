@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 
 export function RichTextRenderer({ content }: { content: any }) {
   if (!content) return null;
@@ -51,7 +52,7 @@ function LexicalRenderer({ nodes }: { nodes: any[] }) {
           case 'upload': {
             const imgUrl = node.value?.url || '';
             const alt = node.value?.alt || '';
-            return imgUrl ? <img key={i} src={imgUrl} alt={alt} className="rounded-xl" /> : null;
+            return imgUrl ? <div key={i} className="relative w-full aspect-video"><Image src={imgUrl} alt={alt} fill sizes="(max-width: 768px) 100vw, 700px" className="rounded-xl object-cover" /></div> : null;
           }
           case 'linebreak':
             return <br key={i} />;

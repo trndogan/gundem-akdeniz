@@ -2,6 +2,7 @@ import React from 'react';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { getPayloadClient } from '@/utils/payload';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
@@ -320,10 +321,13 @@ function ArticleDetailPage({ article, relatedArticles, mostReadArticles }: { art
             {/* Featured Image */}
             {imageUrl && (
               <div className="relative aspect-video rounded-xl overflow-hidden mb-8 border border-gray-200 shadow-sm">
-                <img
+                <Image
                   src={imageUrl}
                   alt={article.title}
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 700px"
+                  className="object-cover"
+                  priority
                 />
               </div>
             )}
@@ -373,11 +377,13 @@ function ArticleDetailPage({ article, relatedArticles, mostReadArticles }: { art
                       }`}>
                         {index + 1}
                       </span>
-                      <div className="w-16 h-12 rounded-lg overflow-hidden shrink-0 border border-gray-200">
-                        <img
+                      <div className="relative w-16 h-12 rounded-lg overflow-hidden shrink-0 border border-gray-200">
+                        <Image
                           src={getImageUrl(item.featuredImage)}
                           alt={item.title}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          fill
+                          sizes="64px"
+                          className="object-cover group-hover:scale-110 transition-transform duration-300"
                         />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -544,10 +550,12 @@ function NewsCard({ article }: { article: Article }) {
   return (
     <Link href={getArticleUrl(article.slug, article.id)} className="group cursor-pointer block">
       <div className="relative aspect-video rounded-xl overflow-hidden mb-4 border border-gray-200 shadow-sm">
-        <img
+        <Image
           src={getImageUrl(article.featuredImage)}
           alt={article.title}
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+          className="object-cover transition-transform duration-500 group-hover:scale-110"
         />
         <div className="absolute top-3 left-3 bg-primary text-white px-2 py-1 rounded text-[10px] font-bold uppercase z-10">
           {getCategoryName(article.category)}
@@ -620,7 +628,7 @@ function LexicalRenderer({ nodes }: { nodes: any[] }) {
           case 'upload': {
             const imgUrl = node.value?.url || '';
             const alt = node.value?.alt || '';
-            return imgUrl ? <img key={i} src={imgUrl} alt={alt} className="rounded-xl" /> : null;
+            return imgUrl ? <div key={i} className="relative w-full aspect-video"><Image src={imgUrl} alt={alt} fill sizes="(max-width: 768px) 100vw, 700px" className="rounded-xl object-cover" /></div> : null;
           }
           case 'linebreak':
             return <br key={i} />;

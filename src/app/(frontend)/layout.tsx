@@ -76,7 +76,14 @@ export default async function FrontendLayout({
   return (
     <html lang="tr" className={inter.variable}>
       <head>
-        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preload" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" as="style" />
+        <script dangerouslySetInnerHTML={{ __html: `
+          var l=document.createElement('link');l.rel='stylesheet';
+          l.href='https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap';
+          document.head.appendChild(l);
+        ` }} />
         <link rel="alternate" type="application/rss+xml" title="Gündem Akdeniz RSS" href="/feed" />
         {gaId && (
           <>

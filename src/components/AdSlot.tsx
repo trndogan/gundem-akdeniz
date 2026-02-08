@@ -46,7 +46,7 @@ export async function AdSlot({ position }: { position: AdPosition }) {
           <div className="bg-gray-200 text-center py-1">
             <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Reklam</span>
           </div>
-          <img src={imgUrl} alt="Reklam" className="w-full" />
+          <img src={imgUrl} alt="Reklam" className="w-full" loading="lazy" />
         </div>
       );
       if (adData.url) {
