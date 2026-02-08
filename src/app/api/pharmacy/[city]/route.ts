@@ -73,7 +73,7 @@ function getApiKeys(): string[] {
   return keys.split(',').map(k => k.trim()).filter(Boolean)
 }
 
-export async function fetchFromCollectApi(citySlug: string): Promise<Pharmacy[]> {
+async function fetchFromCollectApi(citySlug: string): Promise<Pharmacy[]> {
   const cityLabel = CITY_LABEL_MAP[citySlug]
   if (!cityLabel) return []
 
