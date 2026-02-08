@@ -68,41 +68,58 @@ function writeCache(citySlug: string, data: CacheData) {
   }
 }
 
+function getApiKeys(): string[] {
+  const keys = process.env.COLLECTAPI_KEYS || process.env.COLLECTAPI_KEY || ''
+  return keys.split(',').map(k => k.trim()).filter(Boolean)
+}
+
 export async function fetchFromCollectApi(citySlug: string): Promise<Pharmacy[]> {
   const cityLabel = CITY_LABEL_MAP[citySlug]
   if (!cityLabel) return []
 
-  const apiKey = process.env.COLLECTAPI_KEY
-  if (!apiKey) {
-    console.error('COLLECTAPI_KEY env variable is not set')
+  const apiKeys = getApiKeys()
+  if (apiKeys.length === 0) {
+    console.error('COLLECTAPI_KEYS env variable is not set')
     return []
   }
 
   const url = `https://api.collectapi.com/health/dutyPharmacy?il=${encodeURIComponent(cityLabel)}`
-  const res = await fetch(url, {
-    headers: {
-      'authorization': `apikey ${apiKey}`,
-      'content-type': 'application/json',
-    },
-    cache: 'no-store',
-  })
-  if (!res.ok) {
-    console.error(`CollectAPI error: ${res.status} ${res.statusText}`)
-    return []
+
+  for (const apiKey of apiKeys) {
+    try {
+      const res = await fetch(url, {
+        headers: {
+          'authorization': `apikey ${apiKey}`,
+          'content-type': 'application/json',
+        },
+        cache: 'no-store',
+      })
+      if (!res.ok) {
+        console.error(`CollectAPI error (key ...${apiKey.slice(-6)}): ${res.status}`)
+        continue
+      }
+      const data = await res.json()
+      if (!data?.success || !data?.result || !Array.isArray(data.result)) {
+        console.error(`CollectAPI no data (key ...${apiKey.slice(-6)})`)
+        continue
+      }
+
+      const pharmacies = data.result.map((p: any) => ({
+        name: p.name || '',
+        district: p.dist || '',
+        address: p.address || '',
+        phone: p.phone || '',
+      }))
+
+      writeCache(citySlug, { pharmacies, updatedAt: new Date().toISOString() })
+      return pharmacies
+    } catch (err) {
+      console.error(`CollectAPI fetch error (key ...${apiKey.slice(-6)}):`, err)
+      continue
+    }
   }
-  const data = await res.json()
-  if (!data?.result || !Array.isArray(data.result)) return []
 
-  const pharmacies = data.result.map((p: any) => ({
-    name: p.name || '',
-    district: p.dist || '',
-    address: p.address || '',
-    phone: p.phone || '',
-  }))
-
-  writeCache(citySlug, { pharmacies, updatedAt: new Date().toISOString() })
-
-  return pharmacies
+  return []
 }
 
 export async function GET(
