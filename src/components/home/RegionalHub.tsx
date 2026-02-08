@@ -68,7 +68,7 @@ export const RegionalHub = ({ articles }: RegionalHubProps) => {
                        </p>
                        <div className="mt-4 flex items-center justify-between text-[11px] font-semibold text-slate-500 uppercase tracking-widest">
                            <span className="capitalize">{item.location}</span>
-                           <span>{new Date(item.publishedAt).toLocaleDateString('tr-TR')}</span>
+                           <span>{new Date(item.publishedAt || item.createdAt).toLocaleDateString('tr-TR')}</span>
                        </div>
                    </Link>
                ))

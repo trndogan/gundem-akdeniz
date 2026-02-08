@@ -42,7 +42,7 @@ export const Hero = ({ articles }: HeroProps) => {
             <div className="absolute bottom-0 left-0 p-8 w-full lg:w-4/5">
                 <p className="text-white/70 text-sm font-medium mb-3 flex items-center gap-2">
                     <span className="material-symbols-outlined text-sm">schedule</span> 
-                    {new Date(mainStory.publishedAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })}
+                    {new Date(mainStory.publishedAt || mainStory.createdAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })}
                 </p>
                 <h2 className="text-white text-3xl lg:text-5xl font-extrabold leading-tight mb-4 tracking-tight">
                     {mainStory.title}

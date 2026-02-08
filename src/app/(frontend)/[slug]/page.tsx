@@ -310,7 +310,7 @@ function ArticleDetailPage({ article, relatedArticles, mostReadArticles }: { art
             <div className="flex items-center gap-4 text-sm text-slate-500 mb-8 pb-6 border-b border-gray-200">
               <span className="flex items-center gap-1">
                 <span className="material-symbols-outlined text-sm">schedule</span>
-                {new Date(article.publishedAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                {new Date(article.publishedAt || article.createdAt).toLocaleString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
               </span>
               <span className="flex items-center gap-1">
                 <span className="material-symbols-outlined text-sm">person</span>
@@ -569,7 +569,7 @@ function NewsCard({ article }: { article: Article }) {
       </p>
       <div className="mt-4 flex items-center justify-between text-[11px] font-semibold text-slate-500 uppercase tracking-widest">
         <span className="capitalize">{article.location || 'Genel'}</span>
-        <span>{new Date(article.publishedAt).toLocaleDateString('tr-TR')}</span>
+        <span>{new Date(article.publishedAt || article.createdAt).toLocaleDateString('tr-TR')}</span>
       </div>
     </Link>
   );

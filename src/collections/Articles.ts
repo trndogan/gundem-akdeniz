@@ -85,6 +85,16 @@ export const Articles: CollectionConfig = {
           pickerAppearance: 'dayAndTime',
         },
       },
+      hooks: {
+        beforeValidate: [
+          ({ value, operation }) => {
+            if (!value && (operation === 'create' || operation === 'update')) {
+              return new Date().toISOString()
+            }
+            return value
+          },
+        ],
+      },
     },
     {
         name: 'isFeatured',
