@@ -1,38 +1,17 @@
 {
-  "name": "gundem-akdeniz",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
-  },
-  "dependencies": {
-    "@payloadcms/db-postgres": "^3.75.0",
-    "@payloadcms/next": "^3.75.0",
-    "@payloadcms/richtext-lexical": "^3.75.0",
-    "@payloadcms/storage-vercel-blob": "^3.75.0",
-    "@payloadcms/ui": "^3.75.0",
-    "dotenv": "^17.2.4",
-    "drizzle-orm": "^0.45.1",
-    "graphql": "^16.12.0",
-    "next": "^15.4.10",
-    "payload": "^3.75.0",
-    "pg": "^8.18.0",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
-    "sharp": "^0.34.5"
-  },
-  "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "babel-plugin-react-compiler": "1.0.0",
-    "eslint": "^9",
-    "eslint-config-next": "15.1.6",
-    "tailwindcss": "^4",
-    "typescript": "^5"
-  }
+    "$schema": "https://www.schemastore.org/package.json",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "vite build",
+        "dev": "vite"
+    },
+    "devDependencies": {
+        "@tailwindcss/vite": "^4.0.0",
+        "axios": "^1.11.0",
+        "concurrently": "^9.0.1",
+        "laravel-vite-plugin": "^2.0.0",
+        "tailwindcss": "^4.0.0",
+        "vite": "^7.0.7"
+    }
 }

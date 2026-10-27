@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /admin
+Disallow: /livewire
+Disallow: /storage/
+Allow: /storage/articles/
+
+Sitemap: https://gundemakdeniz.com/sitemap.xml
