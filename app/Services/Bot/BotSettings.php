@@ -19,7 +19,8 @@ class BotSettings
         // Claude anahtarı doluysa metin işleri (özgünleştirme, editör puanı) önce Claude'a gider,
         // Gemini yedekte kalır. Görsel üretimi her durumda Gemini'dedir.
         'claude_api_key' => '',
-        'claude_model' => 'claude-opus-5-5',
+        // Ölçüm (27.10.2026, 6 gerçek haber): Sonnet kalitede Opus'a yakın, maliyeti dörtte biri
+        'claude_model' => 'claude-sonnet-5-5',
         'claude_effort' => 'medium',    // low | medium | high; yükseldikçe kalite ve maliyet artar
         'gemini_api_key' => '',
         // Model adları Google tarafında değişir. Geçerli listeyi görmek için:

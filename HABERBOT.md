@@ -6,11 +6,14 @@ yedekte), görselini üreten ve onay kuyruğuna düşüren modül. Panel: `/gaad
 ## Claude
 
 Bot Ayarları > Yapay Zekâ sekmesinde **Claude API anahtarı** doluysa özgünleştirme ve editör
-puanlaması önce Claude ile yapılır (`claude_model`, varsayılan `claude-opus-5-5`). Claude yanıt
+puanlaması önce Claude ile yapılır (`claude_model`, varsayılan `claude-sonnet-5-5`). Claude yanıt
 veremezse (kredi bitti, hata, kısa çıktı) aynı haber için aşağıdaki Gemini zinciri otomatik
 devreye girer, bot durmaz. Anahtar boşaltılırsa yalnız Gemini çalışır.
 
 - Özgünleştirme `claude_effort` ayarıyla (varsayılan orta), editör puanlaması düşük eforla çalışır.
+- Model seçimi ölçümü (6 gerçek haber, kör hakem, 10 üzerinden genel puan / aylık tahmini maliyet,
+  günde ~24 haberle): Opus 5.5 8,2 / ~52 $, Sonnet 5.5 8,0 / ~14 $, Haiku 5.5 düşünmesiz
+  7,2 / ~0,6 $, önceki Gemini 6,3. Haiku özgünlükte en zayıf çıktı (kaynağa çok yakın yazıyor).
 - Talimat sistem istemine konur ve önbelleğe alınır, aynı turdaki haberler talimatı ucuza okur.
 - Sıcaklık ayarı Claude'a gönderilmez, yalnız Gemini'de geçerlidir.
 - Taslaktaki `ai_model` alanı haberi hangi modelin yazdığını gösterir.
